@@ -1,0 +1,33 @@
+aws ec2 create-vpc --cidr-block 192.168.45.0/24 --tag-specifications 'ResourceType=vpc,Tags=[{Key=esperimento,Value=kcluster},{Key=Name,Value=kcluster-vpc}]' --query 'Vpc.VpcId' --output text
+
+aws ec2 create-subnet --vpc-id vpc-0a3699c194d7172c9 --cidr-block 192.168.45.0/24 --tag-specifications 'ResourceType=subnet,Tags=[{Key=esperimento,Value=kcluster},{Key=Name,Value=kcluster-subnet}]' --query 'Subnet.SubnetId' --output text
+
+# aws ec2 modify-subnet-attribute --subnet-id subnet-09827268cf97c0403 --map-public-ip-on-launch
+
+aws ec2 modify-subnet-attribute --subnet-id subnet-09827268cf97c0403 --map-public-ip-on-launch
+
+aws ec2 create-internet-gateway --tag-specifications 'ResourceType=internet-gateway,Tags=[{Key=esperimento,Value=kcluster},{Key=Name,Value=kcluster-igw}]' --query 'InternetGateway.InternetGatewayId' --output text
+
+aws ec2 attach-internet-gateway --internet-gateway-id igw-0407fac3290528062 --vpc-id vpc-0a3699c194d7172c9
+
+aws ec2 create-route-table --vpc-id vpc-0a3699c194d7172c9 --tag-specifications 'ResourceType=route-table,Tags=[{Key=esperimento,Value=kcluster},{Key=Name,Value=kcluster-rt}]' --query 'RouteTable.RouteTableId' --output text
+
+aws ec2 create-route --route-table-id rtb-07515c07e0ba7c512 --destination-cidr-block 0.0.0.0/0 --gateway-id igw-0407fac3290528062
+
+aws ec2 associate-route-table --route-table-id rtb-07515c07e0ba7c512 --subnet-id subnet-09827268cf97c0403
+
+aws ec2 create-security-group --group-name kcluster-access-sg --description "Security group for an AWS k8s-oriented instance cluster" --vpc-id vpc-0a3699c194d7172c9 --tag-specifications 'ResourceType=security-group,Tags=[{Key=esperimento,Value=kcluster},{Key=Name,Value=kcluster-sg}]' --query 'GroupId' --output text
+
+aws ec2 authorize-security-group-ingress --group-id sg-0259b8142aa3a6546 --protocol all --cidr 192.168.45.0/24
+
+aws ec2 authorize-security-group-ingress --group-id sg-0259b8142aa3a6546 --protocol all --cidr 10.10.0.0/16
+
+aws ec2 authorize-security-group-ingress --group-id sg-0259b8142aa3a6546 --ip-permissions IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges=[{CidrIp=151.97.60.123/32},{CidrIp=18.206.107.24/29},{CidrIp=192.168.45.0/24}]
+
+aws ec2 authorize-security-group-ingress --group-id sg-0259b8142aa3a6546 --ip-permissions IpProtocol=tcp,FromPort=6443,ToPort=6443,IpRanges=[{CidrIp=151.97.60.123/32},{CidrIp=18.206.107.24/29},{CidrIp=192.168.45.0/24}]
+
+aws ec2 authorize-security-group-ingress --group-id sg-0259b8142aa3a6546 --ip-permissions IpProtocol=tcp,FromPort=80,ToPort=80,IpRanges=[{CidrIp=151.97.60.123/32},{CidrIp=18.206.107.24/29},{CidrIp=192.168.45.0/24}]
+
+aws ec2 authorize-security-group-ingress --group-id sg-0259b8142aa3a6546 --ip-permissions IpProtocol=tcp,FromPort=443,ToPort=443,IpRanges=[{CidrIp=151.97.60.123/32},{CidrIp=18.206.107.24/29},{CidrIp=192.168.45.0/24}]
+
+aws ec2 authorize-security-group-ingress --group-id sg-0259b8142aa3a6546 --ip-permissions IpProtocol=icmp,FromPort=-1,ToPort=-1,IpRanges=[{CidrIp=151.97.60.123/32},{CidrIp=18.206.107.24/29},{CidrIp=192.168.45.0/24}]

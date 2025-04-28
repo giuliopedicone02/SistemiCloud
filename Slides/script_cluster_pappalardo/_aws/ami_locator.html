@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Ubuntu Amazon EC2 AMI Finder</title>
+     <!-- Main style sheets for CSS2 capable browsers -->
+     <style type="text/css" media="screen">
+     @import url(https://cloud-images.ubuntu.com/include/style.css);
+     pre { background: none; }
+     body { margin: 2em; }
+     table {
+        margin: 0.5em 0;
+        border-collapse: collapse;
+     }
+     td {
+        padding: 0.25em;
+        border: 1pt solid #C1B496; /* ubuntu dark tan */
+     }
+     td p {
+        margin: 0;
+        padding: 0;
+     }
+    </style>
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="tabs.js"></script>
+    <link rel="shortcut icon" href="http://www.ubuntu.com/sites/default/themes/ubuntu10/favicon.ico" type="image/x-icon" />
+</head>
+<body><div id="pageWrapper">
+<div id="header"><a href="http://www.ubuntu.com/"></a></div>
+<div id="main">
+    <!-- Layout -->
+<style type="text/css" title="currentStyle">
+
+            @import "demo_table.css";
+        </style>
+        <script type="text/javascript" src="jquery.js"></script>
+        <script type="text/javascript" language="javascript" src="jquery.dataTables.min.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            (function($) {
+
+            $.fn.dataTableExt.oApi.fnGetColumnData = function ( oSettings, iColumn, bUnique, bFiltered, bIgnoreEmpty ) {
+                // check that we have a column id
+                if ( typeof iColumn == "undefined" ) return new Array();
+
+                // by default we only want unique data
+                if ( typeof bUnique == "undefined" ) bUnique = true;
+
+                // by default we do want to only look at filtered data
+                if ( typeof bFiltered == "undefined" ) bFiltered = true;
+
+                // by default we do not wany to include empty values
+                if ( typeof bIgnoreEmpty == "undefined" ) bIgnoreEmpty = true;
+
+                // list of rows which we're going to loop through
+                var aiRows;
+
+                // use only filtered rows
+                if (bFiltered == true) aiRows = oSettings.aiDisplay;
+                // use all rows
+                else aiRows = oSettings.aiDisplayMaster; // all row numbers
+
+                // set up data array
+                var asResultData = new Array();
+
+                for (var i=0,c=aiRows.length; i<c; i++) {
+                    iRow = aiRows[i];
+                    var aData = this.fnGetData(iRow);
+                    var sValue = aData[iColumn];
+
+                    // ignore empty values?
+                    if (bIgnoreEmpty == true && sValue.length == 0) continue;
+
+                    // ignore unique values?
+                    else if (bUnique == true && jQuery.inArray(sValue, asResultData) > -1) continue;
+
+                    // else push the value onto the result data array
+                    else asResultData.push(sValue);
+                }
+
+                return asResultData;
+            }}(jQuery));
+
+            function removeHTMLTags(ami){
+                    ami = ami.replace(/&(lt|gt);/g, function (strMatch, p1){
+                        return (p1 == "lt")? "<" : ">";
+                    });
+                    var ami_txt = ami.replace(/<\/?[^>]+(>|$)/g, "");
+                    return ami_txt
+            }
+
+            function fnCreateSelect( aData )
+            {
+                var r='<select><option value="">Any</option>', i, iLen=aData.length;
+                for ( i=0 ; i<iLen ; i++ )
+                {
+                    r += '<option value="'+removeHTMLTags(aData[i])+'">'+removeHTMLTags(aData[i])+'</option>';
+                }
+                return r+'</select>';
+            }
+
+
+            $(document).ready(function() {
+                /* Initialise the DataTable */
+                var oTable = $('#ami').dataTable( {
+                    "iDisplayLength": 100,
+                    "aaSorting": [ [1,'desc'], [0,'asc'] ],
+                    "bProcessing": true,
+                    "sAjaxSource": 'releasesTable',
+                    "fnInitComplete": function() {
+                                /* Add a select menu for each TH element in the table footer */
+                                    $("tfoot th").each( function ( i ) {
+                                        this.innerHTML = fnCreateSelect( oTable.fnGetColumnData(i) );
+                                        $('select', this).change( function () {
+                                            oTable.fnFilter( $(this).val(), i );
+                                        } );
+                                    } );
+                            }
+                } );
+
+
+            } );
+        </script>
+    <div id="content" class="page" role="main">
+
+                <div id="post-195" class="post-195 page type-page status-publish hentry">
+                    <h1 class="entry-title">Amazon EC2 AMI Locator</h1>
+                    <div class="entry-content">
+                    <p>As Ubuntu cloud images are uploaded and registered on the Amazon EC2 cloud, they are referred to as AMI (Amazon Machine Images). Each AMI is a machine template from which you can instantiate new servers. Each AMI has its own unique ID. In order to launch an instance on the EC2 cloud, you first need to locate its ID. This page helps you quickly locate an AMI ID. Here&#8217;s how to use it</p>
+<p><strong>Type a few characters in the search box</strong> signifying what you&#8217;re searching for. For example if you would like to find out the AMI-ID for the latest release of &#8220;Precise&#8221; Pangolin to run on a &#8220;64&#8243; bit &#8220;ebs&#8221; instance in the &#8220;us-east&#8221; region, you would search for &#8220;<strong>pre 64 us-east ebs</strong>&#8221; or a subset thereof. As soon as you start typing into the search box, the list zooms-in on the entries that match your criteria. </p>
+You may search based on any of the column headers below</p>
+Here&#8217;s how to start an instance using the AMI ID you just found</p>
+<p>1- Locate the AMI-ID by searching the table below<br />
+2- Assuming your ec2 environment is setup, run an instance by &#8220;<strong>ec2-run-instances ami-xxxxx -O AWS_ACCESS_KEY -W AWS_SECRET_KEY</strong>&#8221;<br />
+<strong>OR</strong> click the ami ID, which will direct you to the AWS console</p>
+</p>
+</p>
+<strong>Note:</strong>Versions ending in EOL are end-of-life and are provided for reference only</p>
+<p>&nbsp;</p>
+                                        </div><!-- .entry-content -->
+            </div>
+            <div id="box" style="width:95%">
+             <h2></h2>
+        <table cellpadding="0" cellspacing="0" border="0" class="display" id="ami">
+            <thead>
+                <tr>
+                    <th width="20%">Zone</th>
+                    <th width="15%">Name</th>
+                    <th width="15%">Version</th>
+                    <th width="15%">Arch</th>
+                    <th width="15%">Instance Type</th>
+                    <th width="14%">Release</th>
+                    <th width="22%">AMI-ID</th>
+                    <th width="15%">AKI-ID</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th width="20%">Zone</th>
+                    <th width="15%">Name</th>
+                    <th width="15%">Version</th>
+                    <th width="15%">Arch</th>
+                    <th width="15%">Instance Type</th>
+                    <th width="14%">Release</th>
+                    <th width="22%">AMI-ID</th>
+                    <th width="10%">AKI-ID</th>
+                </tr>
+            </tfoot>
+        </table>
+        </div><!--box-->
+
+    </div><!-- #content -->
+</div>
+
+</div>
+<div id="footer">
+      <div id="copyright">
+                <p>
+        &copy; 2012 Canonical Ltd. <a href="http://www.ubuntu.com/cloud" title="Ubuntu Cloud" rel="home"><br />Ubuntu Cloud</a>. Ubuntu is a registered trademark of Canonical Ltd.</p>
+
+      </div><!-- #copyright -->
+      <div id="misc">
+            <div id="footer-logo"><a href="http://www.ubuntu.com"></a></div>
+     </div>
+</div>
+
+</div>
+
+</body>
+</html>
+
